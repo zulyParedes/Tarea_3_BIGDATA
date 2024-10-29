@@ -1,0 +1,31 @@
+#Importamos librerias necesarias
+from pyspark.sql import SparkSession, functions as F
+
+# Inicializa la sesión de Spark
+spark = SparkSession.builder.appName('Tarea3').getOrCreate()
+
+# Define la ruta del archivo .csv en HDFS
+file_path = 'hdfs://localhost:9000/Tarea3/rows.csv'
+
+# Lee el archivo .csv
+df = spark.read.format('csv').option('header','true').option('inferSchema', 'true').load(file_path)
+------ operationes de limpieza-------
+# Eliminar filas duplicadas df = df.dropDuplicates()
+# Mostrar el total de filas después de la limpieza print("Número de filas después de la limpieza: ", df.count())
+---------------------
+# Contar el número de beneficiarios por departamento
+print("beneficiarios por departamento\n")
+df.groupBy("NombreDepartamentoAtencion").count().show()
+
+#saber cuantos beneficiarios hay por departamento y municipio
+print("BENEFICIARIOS POR DEAPRTAMENTO Y MUNICIPIO\n")
+#df.groupBy("NombreDepartamentoAtencion", "NombreMunicipioAtencion").count().show()
+
+# Contar el número de beneficiarios por genero
+print("beneficiarios por Genero\n")
+df.groupBy("Genero").count().show()
+
+# Valor promedio del beneficio por tipo de beneficio
+print("Tipo de Beneficio y promedio de beneficiarios\n")
+from pyspark.sql.functions import avg
+df.groupBy("TipoBeneficio").agg(avg("CantidadDeBeneficiarios").alias("PromedioBeneficiarios")).show()
